@@ -16,10 +16,7 @@ To set up the environment for Fast Boot, you need to copy all patch and shell fi
 
 Use the following command:
 
-$ cp Fast-Boot/* ../bld-<backend>/
-
-Make sure to replace <backend> with the actual backend you are using.
-
+$ git clone git@github.com:WPI-ATU-1/meta-wpi-fastboot.git
 
 Build Fast Boot
 ============================================
