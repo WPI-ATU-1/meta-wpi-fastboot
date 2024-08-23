@@ -26,29 +26,29 @@ elif [ "$1" = "clean" ]; then
         case "$2" in
 			"atf")
 				BUILD_ATF=true
-                BUILD_UBOOT=false
-                BUILD_IMAGE=false
+				BUILD_UBOOT=false
+				BUILD_IMAGE=false
 				BUILD_KERNEL=false
-                ;;
-            "uboot")
-                BUILD_ATF=false
-                BUILD_UBOOT=true
-                BUILD_IMAGE=false
+				;;
+			"uboot")
+				BUILD_ATF=false
+				BUILD_UBOOT=true
+				BUILD_IMAGE=false
 				BUILD_KERNEL=false
-                ;;
-            "mkimage")
-                BUILD_ATF=false
-                BUILD_UBOOT=false
-                BUILD_IMAGE=true
+				;;
+			"mkimage")
+				BUILD_ATF=false
+				BUILD_UBOOT=false
+				BUILD_IMAGE=true
 				BUILD_KERNEL=false
-                ;;
+				;;
 			"kernel")
-                BUILD_ATF=false
-                BUILD_UBOOT=false
-                BUILD_IMAGE=false
+				BUILD_ATF=false
+				BUILD_UBOOT=false
+				BUILD_IMAGE=false
 				BUILD_KERNEL=true
-                ;;
-            *)
+				;;
+			*)
                 echo "Invalid argument. Use 'atf', 'uboot', 'mkimage', or no argument for all."
                 exit 1
                 ;;
@@ -124,8 +124,6 @@ build_atf() {
 	echo "Building with make..."
 	CROSS_COMPILE=aarch64-linux-gnu- make PLAT=imx93 bl31
 	
-	echo "Build ATF process completed."	
-	
 	cd - || exit 1
 	
 	echo "Build ATF process completed."
@@ -160,22 +158,6 @@ build_uboot() {
 	
 	cd - || exit 1
 
-	# Copy to imx-boot
-	echo "Copying U-Boot output files..."
-	cp ${UBOOT_TARGET_DIR}u-boot*.bin ${UBOOT_TARGET_DIR}spl/u-boot-spl*.bin ${IMX_BOOT_DIR}iMX9/
-
-	echo "Copying device tree file..."
-	cp ${DEPLOY_DIR}op-gyro.dtb ${IMX_BOOT_DIR}iMX9/
-	
-	echo "Copying mkimage tool..."
-	cp ${UBOOT_TARGET_DIR}tools/mkimage ${IMX_BOOT_DIR}iMX9/
-	cd ${IMX_BOOT_DIR}iMX9/
-	mv "mkimage" "mkimage_uboot"
-	#cp ${UBOOT_TARGET_DIR}tools/mkimage ${IMX_BOOT_DIR}iMX9/
-	#mv "${IMX_BOOT_DIR}iMX9/mkimage" "${IMX_BOOT_DIR}iMX9/mkimage_uboot"
-	
-	cd - || exit 1
-
 	echo "Build U-Boot process completed."
 }
 
@@ -192,6 +174,25 @@ build_image() {
 		cd $IMX_BOOT_DIR
 		git am "$MKIMAGE_PATCH"
 	fi
+	
+	cd - || exit 1
+	
+	# Copy to files
+	echo "Copying ATF output files..."
+	cp ${ATF_TARGET_DIR}build/imx93/release/bl31.bin ${IMX_BOOT_DIR}iMX9/
+	
+	echo "Copying U-Boot output files..."
+	cp ${UBOOT_TARGET_DIR}u-boot*.bin ${UBOOT_TARGET_DIR}spl/u-boot-spl*.bin ${IMX_BOOT_DIR}iMX9/
+
+	echo "Copying device tree file..."
+	cp ${DEPLOY_DIR}op-gyro.dtb ${IMX_BOOT_DIR}iMX9/
+	
+	echo "Copying mkimage tool..."
+	cp ${UBOOT_TARGET_DIR}tools/mkimage ${IMX_BOOT_DIR}iMX9/
+	cd ${IMX_BOOT_DIR}iMX9/
+	mv "mkimage" "mkimage_uboot"
+	#cp ${UBOOT_TARGET_DIR}tools/mkimage ${IMX_BOOT_DIR}iMX9/
+	#mv "${IMX_BOOT_DIR}iMX9/mkimage" "${IMX_BOOT_DIR}iMX9/mkimage_uboot"
 	
 	cd - || exit 1
 	
