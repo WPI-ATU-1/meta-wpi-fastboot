@@ -1,0 +1,40 @@
+This README file contains information on the contents of the Fast-Boot project. Please see the corresponding sections below for details.
+
+
+Dependencies
+============================================
+Before you begin, ensure that you have built the BSP first.
+
+You can do this by running the following command:
+
+$ bitbake imx-image-multimedia
+
+
+Setup Environment
+============================================
+To set up the environment for Fast Boot, you need to copy all patch and shell files to the appropriate build directory.
+
+Use the following command:
+
+$ git clone git@github.com:WPI-ATU-1/meta-wpi-fastboot.git
+
+Build Fast Boot
+============================================
+To build Fast Boot, execute the following command:
+
+$ sh ./Build-Fast-Boot.sh
+
+For more command details and options available in the Build-Fast-Boot.sh script, you can use the help command:
+
+$ sh ./Build-Fast-Boot.sh help
+
+This will display a list of available commands and their descriptions.
+
+
+Additional Information
+============================================
+Ensure you have the necessary permissions to execute the script.
+Running the clean option will reset any uncommitted changes in the specified components. Use it with caution.
+Make sure to run this script from the correct directory where the build environment is set up.
+If you encounter any issues, please refer to the troubleshooting section in the documentation or contact the support team.
+Thank you for using Fast-Boot! We hope this project helps you streamline your boot process.
