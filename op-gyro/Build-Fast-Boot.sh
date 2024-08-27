@@ -5,11 +5,11 @@ ATF_PATCH="WPI-OP-Gyro-Fast-Boot-ATF-Add-RAM-FDT-address.patch"
 UBOOT_PATCH="WPI-OP-Gyro-Fast-Boot-U-Boot-Falcon-Mode-Modified.patch"
 MKIMAGE_PATCH="WPI-OP-Gyro-Fast-Boot-mkimge-Falcon-Mode.patch"
 KERNEL_PATCH="WPI-OP-Gyro-Fast-Boot-Kernel-Falcon-Mode-Device-Tree.patch"
-ATF_TARGET_DIR="tmp/work/opgyro-poky-linux/imx-atf/*/git/"
-UBOOT_TARGET_DIR="tmp/work/opgyro-poky-linux/u-boot-imx/*/git/"
-IMX_BOOT_DIR="tmp/work/opgyro-poky-linux/imx-boot/*/git/"
-KERNEL_DIR="tmp/work/opgyro-poky-linux/linux-imx/*/git/"
-DEPLOY_DIR="tmp/deploy/images/opgyro/"
+ATF_TARGET_DIR="../tmp/work/opgyro-poky-linux/imx-atf/*/git/"
+UBOOT_TARGET_DIR="../tmp/work/opgyro-poky-linux/u-boot-imx/*/git/"
+IMX_BOOT_DIR="../tmp/work/opgyro-poky-linux/imx-boot/*/git/"
+KERNEL_DIR="../tmp/work/opgyro-poky-linux/linux-imx/*/git/"
+DEPLOY_DIR="../tmp/deploy/images/opgyro/"
 
 # Check Build Target
 if [ "$#" -eq 0 ]; then
@@ -26,29 +26,29 @@ elif [ "$1" = "clean" ]; then
         case "$2" in
 			"atf")
 				BUILD_ATF=true
-				BUILD_UBOOT=false
-				BUILD_IMAGE=false
+                BUILD_UBOOT=false
+                BUILD_IMAGE=false
 				BUILD_KERNEL=false
-				;;
-			"uboot")
-				BUILD_ATF=false
-				BUILD_UBOOT=true
-				BUILD_IMAGE=false
+                ;;
+            "uboot")
+                BUILD_ATF=false
+                BUILD_UBOOT=true
+                BUILD_IMAGE=false
 				BUILD_KERNEL=false
-				;;
-			"mkimage")
-				BUILD_ATF=false
-				BUILD_UBOOT=false
-				BUILD_IMAGE=true
+                ;;
+            "mkimage")
+                BUILD_ATF=false
+                BUILD_UBOOT=false
+                BUILD_IMAGE=true
 				BUILD_KERNEL=false
-				;;
+                ;;
 			"kernel")
-				BUILD_ATF=false
-				BUILD_UBOOT=false
-				BUILD_IMAGE=false
+                BUILD_ATF=false
+                BUILD_UBOOT=false
+                BUILD_IMAGE=false
 				BUILD_KERNEL=true
-				;;
-			*)
+                ;;
+            *)
                 echo "Invalid argument. Use 'atf', 'uboot', 'mkimage', or no argument for all."
                 exit 1
                 ;;
@@ -60,42 +60,42 @@ else
             BUILD_ATF=true
             BUILD_UBOOT=false
             BUILD_IMAGE=false
-			BUILD_KERNEL=false
+	    BUILD_KERNEL=false
             BUILD_CLEAN=false
-			Help=false
+	    Help=false
             ;;
         "uboot")
             BUILD_ATF=false
             BUILD_UBOOT=true
             BUILD_IMAGE=false
-			BUILD_KERNEL=false
+	    BUILD_KERNEL=false
             BUILD_CLEAN=false
-			Help=false
+	    Help=false
             ;;
         "mkimage")
             BUILD_ATF=false
             BUILD_UBOOT=false
             BUILD_IMAGE=true
-			BUILD_KERNEL=false
+	    BUILD_KERNEL=false
             BUILD_CLEAN=false
-			Help=false
+	    Help=false
             ;;
-		"kernel")
+	"kernel")
             BUILD_ATF=false
             BUILD_UBOOT=false
             BUILD_IMAGE=false
-			BUILD_KERNEL=true
+	    BUILD_KERNEL=true
             BUILD_CLEAN=false
-			Help=false
+	    Help=false
             ;;
-		"help")
-			BUILD_ATF=false
+	"help")
+	    BUILD_ATF=false
             BUILD_UBOOT=false
             BUILD_IMAGE=false
-			BUILD_KERNEL=false
+	    BUILD_KERNEL=false
             BUILD_CLEAN=false
-			Help=true
-			;;
+	    Help=true
+	    ;;
         *)
             echo "Invalid argument. Use 'atf', 'uboot', 'kernel', or 'mkimage'."
             exit 1
@@ -123,6 +123,8 @@ build_atf() {
 	# Build
 	echo "Building with make..."
 	CROSS_COMPILE=aarch64-linux-gnu- make PLAT=imx93 bl31
+	
+	echo "Build ATF process completed."	
 	
 	cd - || exit 1
 	
@@ -158,6 +160,22 @@ build_uboot() {
 	
 	cd - || exit 1
 
+	# Copy to imx-boot
+	echo "Copying U-Boot output files..."
+	cp ${UBOOT_TARGET_DIR}u-boot*.bin ${UBOOT_TARGET_DIR}spl/u-boot-spl*.bin ${IMX_BOOT_DIR}iMX9/
+
+	echo "Copying device tree file..."
+	cp ${DEPLOY_DIR}op-gyro.dtb ${IMX_BOOT_DIR}iMX9/
+	
+	echo "Copying mkimage tool..."
+	cp ${UBOOT_TARGET_DIR}tools/mkimage ${IMX_BOOT_DIR}iMX9/
+	cd ${IMX_BOOT_DIR}iMX9/
+	mv "mkimage" "mkimage_uboot"
+	#cp ${UBOOT_TARGET_DIR}tools/mkimage ${IMX_BOOT_DIR}iMX9/
+	#mv "${IMX_BOOT_DIR}iMX9/mkimage" "${IMX_BOOT_DIR}iMX9/mkimage_uboot"
+	
+	cd - || exit 1
+
 	echo "Build U-Boot process completed."
 }
 
@@ -174,25 +192,6 @@ build_image() {
 		cd $IMX_BOOT_DIR
 		git am "$MKIMAGE_PATCH"
 	fi
-	
-	cd - || exit 1
-	
-	# Copy to files
-	echo "Copying ATF output files..."
-	cp ${ATF_TARGET_DIR}build/imx93/release/bl31.bin ${IMX_BOOT_DIR}iMX9/
-	
-	echo "Copying U-Boot output files..."
-	cp ${UBOOT_TARGET_DIR}u-boot*.bin ${UBOOT_TARGET_DIR}spl/u-boot-spl*.bin ${IMX_BOOT_DIR}iMX9/
-
-	echo "Copying device tree file..."
-	cp ${DEPLOY_DIR}op-gyro.dtb ${IMX_BOOT_DIR}iMX9/
-	
-	echo "Copying mkimage tool..."
-	cp ${UBOOT_TARGET_DIR}tools/mkimage ${IMX_BOOT_DIR}iMX9/
-	cd ${IMX_BOOT_DIR}iMX9/
-	mv "mkimage" "mkimage_uboot"
-	#cp ${UBOOT_TARGET_DIR}tools/mkimage ${IMX_BOOT_DIR}iMX9/
-	#mv "${IMX_BOOT_DIR}iMX9/mkimage" "${IMX_BOOT_DIR}iMX9/mkimage_uboot"
 	
 	cd - || exit 1
 	
@@ -366,7 +365,7 @@ Help() {
     echo "           Use 'clean atf' to reset only the ATF component."
     echo "           Use 'clean uboot' to reset only the U-Boot component."
     echo "           Use 'clean mkimage' to reset only the MKimage component."
-	echo "           Use 'clean kernel' to reset only the Kernel component."
+    echo "           Use 'clean kernel' to reset only the Kernel component."
     echo ""
     echo "Description:"
     echo "This script is designed to assist users in building and managing the Fast Boot process for the OP-Gyro platform."
