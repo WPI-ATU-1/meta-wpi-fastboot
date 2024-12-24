@@ -1,0 +1,137 @@
+From 7ca2bf66d7bb0ff5dc7e1d6fb38e61afeab85fa8 Mon Sep 17 00:00:00 2001
+From: "wpi.ray" <ray.zhang@wpi-group.com>
+Date: Fri, 6 Dec 2024 16:49:01 +0800
+Subject: [PATCH] WPI: OP-Gyro: Fast-Boot imx-boot Modification
+
+---
+ iMX8M/mkimage_fit_atf.sh        |  1 +
+ iMX8M/mkimage_fit_atf_kernel.sh | 75 +++++++++++++++++++++++++++++++++
+ iMX93/soc.mak                   | 11 ++++-
+ 3 files changed, 86 insertions(+), 1 deletion(-)
+ create mode 100755 iMX8M/mkimage_fit_atf_kernel.sh
+
+diff --git a/iMX8M/mkimage_fit_atf.sh b/iMX8M/mkimage_fit_atf.sh
+index b0a9045..59084c2 100755
+--- a/iMX8M/mkimage_fit_atf.sh
++++ b/iMX8M/mkimage_fit_atf.sh
+@@ -82,6 +82,7 @@ cat << __HEADER_EOF
+ 			data = /incbin/("$BL33");
+ 			type = "standalone";
+ 			arch = "arm64";
++			os = "u-boot";
+ 			compression = "none";
+ 			load = <0x40200000>;
+ 		};
+diff --git a/iMX8M/mkimage_fit_atf_kernel.sh b/iMX8M/mkimage_fit_atf_kernel.sh
+new file mode 100755
+index 0000000..17b109a
+--- /dev/null
++++ b/iMX8M/mkimage_fit_atf_kernel.sh
+@@ -0,0 +1,75 @@
++#!/bin/sh
++
++## This script creates the FIT source image (.its) which includes the ATF and the kernel.
++
++[ -z "$BL31" ] && BL31="bl31.bin"
++
++if [ ! -f $BL31 ]; then
++	echo "ERROR: BL31 file $BL31 NOT found" >&2
++	exit 0
++else
++	echo "$BL31 size: " >&2
++	ls -lct $BL31 | awk '{print $5}' >&2
++fi
++
++if [ -z "$ATF_LOAD_ADDR" ]; then
++	echo "ERROR: BL31 load address is not set" >&2
++	exit 0
++fi
++
++[ -z "$KERNEL_IMAGE" ] && KERNEL_IMAGE="Image"
++
++if [ ! -f $KERNEL_IMAGE ]; then
++	echo "ERROR: Kernel file $KERNEL_IMAGE NOT found" >&2
++	exit 0
++else
++	echo "$KERNEL_IMAGE size: " >&2
++	ls -lct $KERNEL_IMAGE | awk '{print $5}' >&2
++fi
++
++if [ -z "$KERNEL_LOAD_ADDR" ]; then
++	echo "ERROR: Kernel load address is not set" >&2
++	exit 0
++fi
++
++cat << __HEADER_EOF
++/dts-v1/;
++
++/ {
++	description = "FIT Image File for i.MX8M Linux kernel + ATF";
++	#address-cells = <1>;
++
++	images {
++
++		kernel {
++			description = "AARM64 Linux kernel";
++			data = /incbin/("$KERNEL_IMAGE");
++			type = "kernel";
++			arch = "arm64";
++			compression = "none";
++			load = <$KERNEL_LOAD_ADDR>;
++			entry = <$KERNEL_LOAD_ADDR>;
++		};
++
++		atf-1 {
++			description = "ARM Trusted Firmware";
++			data = /incbin/("$BL31");
++			arch = "arm64";
++			type = "firmware";
++			compression = "none";
++			load = <$ATF_LOAD_ADDR>;
++			entry = <$ATF_LOAD_ADDR>;
++		};
++	};
++
++	configurations {
++		default = "config-1";
++		config-1 {
++			description = "Boot Linux kernel";
++			kernel = "kernel";
++			firmware = "atf-1";
++			loadables = "kernel";
++		};
++	};
++};
++__HEADER_EOF
+diff --git a/iMX93/soc.mak b/iMX93/soc.mak
+index 560d38e..5c02d4d 100644
+--- a/iMX93/soc.mak
++++ b/iMX93/soc.mak
+@@ -163,6 +163,15 @@ u-boot-atf-container-spinand.img: bl31.bin u-boot-hash.bin
+ 			   -out u-boot-atf-container-spinand.img; \
+ 	fi
+ 
++kernel-atf-container.img: bl31.bin Image
++	./$(MKIMG) -soc IMX9 -c \
++		   -ap bl31.bin a55 $(ATF_LOAD_ADDR) \
++		   -ap Image a55 $(UBOOT_LOAD_ADDR) \
++		   -out kernel-atf-container.img; \
++
++uImage: Image
++	mkimage -A arm -O linux -T kernel -C none -a 0x83FFFFC0 -e 0x84000000 -n "Linux kernel" -d Image uImage
++
+ fcb.bin: FORCE
+ 	./$(QSPI_FCB_GEN) $(QSPI_HEADER)
+ 
+@@ -172,7 +181,7 @@ flash_fw.bin: FORCE
+ 
+ .PHONY: clean nightly
+ clean:
+-	@rm -f $(MKIMG) u-boot-atf-container.img u-boot-spl-ddr.bin u-boot-spl-ddr-qb.bin u-boot-hash.bin
++	@rm -f $(MKIMG) u-boot-atf-container.img u-boot-spl-ddr.bin u-boot-spl-ddr-qb.bin u-boot-hash.bin kernel-atf-container.img uImage
+ 	@rm -rf extracted_imgs
+ 	@echo "imx93 clean done"
+ 
+-- 
+2.25.1
+
