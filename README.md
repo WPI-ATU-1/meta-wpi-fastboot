@@ -21,6 +21,7 @@ repo sync
 Clone the meta-wpi-fastboot Meta-layer into your sources directory
 
 ```sh
+cd sources
 git clone git@github.com:WPI-ATU-1/meta-wpi-fastboot.git
 ```
 
@@ -31,7 +32,13 @@ DISTRO=fsl-imx-wayland MACHINE=<machine_name> source sources/meta-wpi-fastboot/t
 ```
 
 Where ```<machine_name>``` is:
-- **opgyro-fastboo**  			    for OP-Gyro (i.MX93)
+- **opgyro-fastboot**  			    for OP-Gyro (i.MX93)
+
+Example:
+
+```sh
+DISTRO=fsl-imx-xwayland MACHINE=opgyro-fastboot source sources/meta-wpi-fastboot/tools/imx-setup-fastboot.sh -b build-L6.6.23-opgyro-full-fastboot
+```
 
 #### Build the fastboot image
 
