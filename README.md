@@ -63,3 +63,29 @@ This command creates the ```<board>-falcon.dtb```, which is saved automatically 
 This device tree will be used by SPL to boot in Falcon Mode.
 
 Any subsequent time you boot the board, it will automatically start in Falcon Mode. You can fall back to U-Boot by keeping any key pressed during power on.
+
+#### Result
+
+U-Boot SPL 2024.04+g674440bc73e+p0 (Jun 06 2024 - 10:05:34 +0000)
+SOC: 0xa1009300
+LC: 0x2040010
+PMIC: PCA9451A
+PMIC: Over Drive Voltage Mode
+DDR: 3733MTS
+M33 prepare ok
+Normal Boot
+Trying to boot from MMC2
+NOTICE:  TRDC init done
+NOTICE:  BL31: v2.10.0  (release):automotive-14.0.0_2.1.0-dirty
+NOTICE:  BL31: Built : 10:04:22, May 29 2024
+[    0.113304] imx93-ldb soc@0:ldb@4ac10020: Failed to create device link (0x180) with 4ae30000.lcd-controller
+[    0.149032] qoriq_thermal 44482000.tmu: invalid range data.
+[    0.281384] imx93-ldb soc@0:ldb@4ac10020: Failed to create device link (0x180) with soc@0:phy@4ac10024
+[    0.347140] rtc-rs5c372 2-0032: hctosys: unable to read the hardware clock
+[    0.417495] ov5640 0-003c: ov5640_read_reg: error: reg=300a
+[    0.423070] ov5640 0-003c: ov5640_check_chip_id: failed to read chip identifier
+[    0.431966] imx93-ldb soc@0:ldb@4ac10020: Failed to create device link (0x180) with lvds_panel
+
+NXP i.MX Release Distro 6.6-scarthgap opgyro ttyLP0
+
+opgyro login: 
