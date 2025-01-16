@@ -65,7 +65,7 @@ This device tree will be used by SPL to boot in Falcon Mode.
 Any subsequent time you boot the board, it will automatically start in Falcon Mode. You can fall back to U-Boot by keeping any key pressed during power on.
 
 #### Result
-
+```bash!
 U-Boot SPL 2024.04+g674440bc73e+p0 (Jun 06 2024 - 10:05:34 +0000)
 SOC: 0xa1009300
 LC: 0x2040010
@@ -89,3 +89,4 @@ NOTICE:  BL31: Built : 10:04:22, May 29 2024
 NXP i.MX Release Distro 6.6-scarthgap opgyro ttyLP0
 
 opgyro login: 
+```
