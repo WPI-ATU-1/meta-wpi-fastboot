@@ -90,3 +90,5 @@ NXP i.MX Release Distro 6.6-scarthgap opgyro ttyLP0
 
 opgyro login: 
 ```
+
+![image](https://github.com/WPI-Ray/meta-wpi-fastboot/blob/lf-6.6.23-2.0.0/OP-Gyro%20Fast%20Boot%20Log%20Compare.gif)
