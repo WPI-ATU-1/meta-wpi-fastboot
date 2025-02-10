@@ -40,4 +40,3 @@ echo source $RELEASEPROGNAME -b $BUILD_DIR
 source $RELEASEPROGNAME -b $BUILD_DIR
 
 echo "BBLAYERS += \"\${BSPDIR}/sources/meta-wpi-fastboot\"" >> $BUILD_DIR/conf/bblayers.conf
-echo "BBMASK += \"\${BSPDIR}/sources/meta-wpi/recipes-core\"" >> $BUILD_DIR/conf/bblayers.conf

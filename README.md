@@ -56,6 +56,7 @@ Run the following command:
 
 ```sh
 u-boot => run prepare_fdt
+u-boot => reset
 ```
 
 This command creates the ```<board>-falcon.dtb```, which is saved automatically in the FAT partition of the SD card. **You only need to run this command once.**
@@ -78,15 +79,14 @@ Trying to boot from MMC2
 NOTICE:  TRDC init done
 NOTICE:  BL31: v2.10.0  (release):automotive-14.0.0_2.1.0-dirty
 NOTICE:  BL31: Built : 10:04:22, May 29 2024
-[    0.113304] imx93-ldb soc@0:ldb@4ac10020: Failed to create device link (0x180) with 4ae30000.lcd-controller
-[    0.149032] qoriq_thermal 44482000.tmu: invalid range data.
-[    0.281384] imx93-ldb soc@0:ldb@4ac10020: Failed to create device link (0x180) with soc@0:phy@4ac10024
-[    0.347140] rtc-rs5c372 2-0032: hctosys: unable to read the hardware clock
-[    0.417495] ov5640 0-003c: ov5640_read_reg: error: reg=300a
-[    0.423070] ov5640 0-003c: ov5640_check_chip_id: failed to read chip identifier
-[    0.431966] imx93-ldb soc@0:ldb@4ac10020: Failed to create device link (0x180) with lvds_panel
+[    0.121523] imx93-ldb soc@0:ldb@4ac10020: Failed to create device link (0x180) with 4ae30000.lcd-controller
+[    0.157510] qoriq_thermal 44482000.tmu: invalid range data.
+[    0.289513] imx93-ldb soc@0:ldb@4ac10020: Failed to create device link (0x180) with soc@0:phy@4ac10024
+[    0.421409] imx93-ldb soc@0:ldb@4ac10020: Failed to create device link (0x180) with lvds_panel
 
 NXP i.MX Release Distro 6.6-scarthgap opgyro ttyLP0
 
-opgyro login: 
+opgyro login:
 ```
+
+![image](https://github.com/WPI-Ray/meta-wpi-fastboot/blob/lf-6.6.23-2.0.0/OP-Gyro%20Fast%20Boot%20Log%20Compare.gif)
